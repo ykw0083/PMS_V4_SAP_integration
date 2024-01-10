@@ -293,6 +293,7 @@ namespace PMS_V4_SAP_integration.Helper
                     oCOM.Lines.VatGroup = lines.VatGroup;
                     //oCOM.Lines.Quantity = lines.Quantity;  //quantity not require in service document
                     oCOM.Lines.UserFields.Fields.Item("U_FRef").Value = lines.U_FRef; //user defined fields
+                    oCOM.Lines.Add();
 
                 }
 
