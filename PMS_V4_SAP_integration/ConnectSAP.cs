@@ -6,9 +6,15 @@ using Microsoft.Extensions.Configuration;
 using System.Windows.Forms;
 using PMS_V4_SAP_integration.Helper;
 using System;
+using System.Data.SqlClient;
 
 namespace PMS_V4_SAP_integration
 {
+    public class SapLogin
+    {
+        public string username { get; set; }
+        public string password { get; set; }
+    }
     public class ConnectSAP
     {
         private int connectionResult;
@@ -24,16 +30,35 @@ namespace PMS_V4_SAP_integration
             _configuration = configuration;
 
         }
-
         public int SAPConnect()
         {
+            string connectionString = _configuration.GetConnectionString("Default");
+            string username = "";
+            string password = "";
+            using (var connectSQL = new SqlConnection(connectionString))
+            {
+                connectSQL.Open(); // Asynchronous connectSQL open
+                var query = "select username, password from trans_br";
+                SapLogin saplogin = connectSQL.QueryFirstOrDefault<SapLogin>(query); // Retrieve the JSON string result
+                if (saplogin != null)
+                {
+                    username = saplogin.username; 
+                    password = saplogin.password;
+                }
+                connectSQL.Close();
+            }
+
             if (!string.IsNullOrEmpty(_configuration.GetSection("SAPBusinessOneConfig:Server").Value))
                 oCompany.Server = _configuration.GetSection("SAPBusinessOneConfig:Server").Value;
             if (!string.IsNullOrEmpty(_configuration.GetSection("SAPBusinessOneConfig:CompanyDB").Value))
                 oCompany.CompanyDB = _configuration.GetSection("SAPBusinessOneConfig:CompanyDB").Value; //need to set this to the PRD company DB 
-            if (!string.IsNullOrEmpty(_configuration.GetSection("SAPBusinessOneConfig:UserName").Value))
+            if (!string.IsNullOrEmpty(username))
+                oCompany.UserName = username;
+            else if (!string.IsNullOrEmpty(_configuration.GetSection("SAPBusinessOneConfig:UserName").Value))
                 oCompany.UserName = _configuration.GetSection("SAPBusinessOneConfig:UserName").Value; //get the PRD db username and password
-            if (!string.IsNullOrEmpty(_configuration.GetSection("SAPBusinessOneConfig:Password").Value))
+            if (!string.IsNullOrEmpty(password))
+                oCompany.Password = password;
+            else if (!string.IsNullOrEmpty(_configuration.GetSection("SAPBusinessOneConfig:Password").Value))
                 oCompany.Password = _configuration.GetSection("SAPBusinessOneConfig:Password").Value;
             if (!string.IsNullOrEmpty(_configuration.GetSection("SAPBusinessOneConfig:DbServerType").Value))
                 oCompany.DbServerType = (BoDataServerTypes)Enum.Parse(typeof(BoDataServerTypes), _configuration.GetSection("SAPBusinessOneConfig:DbServerType").Value, true);
