@@ -16,6 +16,10 @@ namespace PMS_V4_SAP_integration.Models
         public string Comments { get; set; }
         public int Series { get; set; }
 
+        public int ExpensesCode { get; set; }
+        public double ExpensesLineTotal { get; set; }
+        public string ExpensesVatGroup { get; set; }
+
         public List<InvoiceList> Lines { get; set; } = new List<InvoiceList>();
 
     }

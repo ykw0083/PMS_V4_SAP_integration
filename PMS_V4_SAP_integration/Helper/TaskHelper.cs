@@ -225,11 +225,19 @@ namespace PMS_V4_SAP_integration.Helper
                 foreach (var lines in invoice.Lines)
                 {
 
-                oINV.Lines.ItemCode = lines.ItemCode;
-                oINV.Lines.ProjectCode = lines.ProjectCode;
-                oINV.Lines.VatGroup = lines.VatGroup;
-                oINV.Lines.Quantity = (double)lines.Quantity;
-                oINV.Lines.Add();
+                    oINV.Lines.ItemCode = lines.ItemCode;
+                    oINV.Lines.ProjectCode = lines.ProjectCode;
+                    oINV.Lines.VatGroup = lines.VatGroup;
+                    oINV.Lines.Quantity = (double)lines.Quantity;
+
+                    if (invoice.ExpensesLineTotal != 0)
+                    {
+                        oINV.Expenses.SetCurrentLine(0);
+                        oINV.Expenses.ExpenseCode = invoice.ExpensesCode;
+                        oINV.Expenses.LineTotal = invoice.ExpensesLineTotal; // value have to be negative
+                        oINV.Expenses.VatGroup = invoice.ExpensesVatGroup;
+                    }
+                    oINV.Lines.Add();
 
                 }
                     
@@ -350,6 +358,14 @@ namespace PMS_V4_SAP_integration.Helper
                     oCOM.Lines.VatGroup = lines.VatGroup; 
                     oCOM.Lines.Quantity = lines.Quantity;
                     oCOM.Lines.UserFields.Fields.Item("U_FRef").Value = "0";//lines.U_FRef; //user defined fields
+
+                    if (creditNote.ExpensesLineTotal != 0)
+                    {
+                        oCOM.Expenses.SetCurrentLine(0);
+                        oCOM.Expenses.ExpenseCode = creditNote.ExpensesCode;
+                        oCOM.Expenses.LineTotal = creditNote.ExpensesLineTotal; // value have to be negative
+                        oCOM.Expenses.VatGroup = creditNote.ExpensesVatGroup;
+                    }
                     oCOM.Lines.Add();
 
                 }

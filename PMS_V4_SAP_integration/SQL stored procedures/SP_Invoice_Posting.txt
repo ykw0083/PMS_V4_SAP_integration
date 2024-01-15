@@ -1,6 +1,6 @@
 ﻿USE [PMS_V4]
 GO
-/****** Object:  StoredProcedure [dbo].[SP_invoicePosting]    Script Date: 28/11/2023 5:26:20 PM ******/
+/****** Object:  StoredProcedure [dbo].[SP_invoicePosting]    Script Date: 15-Jan-24 1:36:31 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -43,6 +43,7 @@ BEGIN
 SELECT CAST((select T0.sk_hdr ,T0.cust as CardCode, 'INV/K/' + T0.doccode as NumAtCard, T0.draw as Project
 , T0.docdate as DocDate, TD.docdate as DocDueDate, TD.docdate as TaxDate
 , 'Generate From PMS Addon Invoice' as Comments, TB.invseries as Series
+, 1 as ExpensesCode, 'X0SC' as ExpensesVatGroup, round(ctel.DocTotal * T0.disc / 100, 2) * -1 as ExpensesLineTotal
 ,(
 	select T1.UnitPrice, T1.Quantity
 	, T1.ProjectCode, T1.ItemCode, T1.VatGroup, null as [Add()]
@@ -51,6 +52,7 @@ SELECT CAST((select T0.sk_hdr ,T0.cust as CardCode, 'INV/K/' + T0.doccode as Num
 	for json path, INCLUDE_NULL_VALUES 
 ) as Lines
 from invoice T0
+inner join ctel on T0.sk_hdr = ctel.sk_hdr
 inner join draw_price TD on T0.draw = TD.doccode
 , trans_br TB
 where postflag = 0 and chkflag = 1
