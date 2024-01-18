@@ -6,7 +6,7 @@ namespace PMS_V4_SAP_integration.Models
 {
     public class InvoiceList
     {
-        public decimal UnitPrice { get; set; }
+        public double UnitPrice { get; set; }
         public int Quantity { get; set; }
         public string ProjectCode { get; set; }
         public string ItemCode { get; set; }

@@ -226,6 +226,7 @@ namespace PMS_V4_SAP_integration.Helper
                 {
 
                     oINV.Lines.ItemCode = lines.ItemCode;
+                    oINV.Lines.UnitPrice = lines.UnitPrice;
                     oINV.Lines.ProjectCode = lines.ProjectCode;
                     oINV.Lines.VatGroup = lines.VatGroup;
                     oINV.Lines.Quantity = (double)lines.Quantity;
