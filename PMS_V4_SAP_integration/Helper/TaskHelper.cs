@@ -50,12 +50,15 @@ namespace PMS_V4_SAP_integration.Helper
                     // Pass the open connectSQL to Execute_Invoice_ScriptAsync
                     Log(logListView, "Adding Invoice...");
                     Execute_Invoice_Script(connectSQL, logListView, textboxView, connectSAP);  //disabled for testing
-                    
-                    Log(logListView, "Adding Commission...");
-                    Execute_Commission_Script(connectSQL, logListView, textboxView, connectSAP);
 
                     Log(logListView, "Adding Credit Note...");
                     Execute_CreditNote_Script(connectSQL, logListView, textboxView, connectSAP);
+
+                    Log(logListView, "Adding Commission...");
+                    Execute_Commission_Script(connectSQL, logListView, textboxView, connectSAP);
+
+                    Log(logListView, "Adding RD Commission...");
+                    Execute_RDCommission_Script(connectSQL, logListView, textboxView, connectSAP);
 
                     Log(logListView, "Process completed! ");
                     textboxView.Text = "Process completed!";
@@ -171,6 +174,36 @@ namespace PMS_V4_SAP_integration.Helper
             // Further processing with the retrieved invoices if needed
         }
 
+        public static void Execute_RDCommission_Script(SqlConnection connectSQL, ListView logListView, TextBox textboxView, ConnectSAP connectSAP)
+        {
+
+            var query = "exec SP_commissionRedemptionPosting";
+            // query should check whether the postflag is 1, if already 1 that means already post, and to prevent duplicate.
+
+            var jsonResult = connectSQL.QueryFirstOrDefault<string>(query); // Retrieve the JSON string result
+
+            if (!string.IsNullOrEmpty(jsonResult))
+            {
+                //Log(logListView, "Retrieved JSON:");
+                //Log(logListView, jsonResult);
+
+                // Deserialize the JSON string into a list of Invoice objects
+                List<Commission> commissions = JsonConvert.DeserializeObject<List<Commission>>(jsonResult);
+
+                // Accessing the deserialized data and logging
+                foreach (var commission in commissions)
+                {
+                    //Log(logListView, $"Commission: CardCode: {commission.CardCode}, NumAtCard: {commission.NumAtCard}");
+                    textboxView.Text = "RD Commission " + commission.CardCode;
+                    Insert_RDCommission_To_SAP(commission, logListView, connectSAP, connectSQL);
+                }
+            }
+            else
+            {
+                Log(logListView, "No data retrieved from the stored procedure.");
+            }
+            // Further processing with the retrieved invoices if needed
+        }
         //Exec Credit Note
         public static void Execute_CreditNote_Script(SqlConnection connectSQL, ListView logListView, TextBox textboxView, ConnectSAP connectSAP)
         {
@@ -298,7 +331,71 @@ namespace PMS_V4_SAP_integration.Helper
                     oCOM.Lines.ItemDescription = lines.ItemDescription;
                     oCOM.Lines.UnitPrice = lines.UnitPrice;
                     oCOM.Lines.AccountCode = lines.AccountCode;  //SAP requires Account code insert to lines
-                    oCOM.Lines.ProjectCode = lines.ProjectCode;
+                    if (!string.IsNullOrEmpty(lines.ProjectCode))
+                        oCOM.Lines.ProjectCode = lines.ProjectCode;
+                    oCOM.Lines.VatGroup = lines.VatGroup;
+                    //oCOM.Lines.Quantity = lines.Quantity;  //quantity not require in service document
+                    oCOM.Lines.UserFields.Fields.Item("U_FRef").Value = lines.U_FRef; //user defined fields
+                    oCOM.Lines.Add();
+
+                }
+
+                if (oCOM.Add() != 0) //if 0 is success, else is fail
+                {
+
+                    string errmsg = $"{connectSAP.oCompany.GetLastErrorCode()} - {connectSAP.oCompany.GetLastErrorDescription()}";
+                    Log(logListView, errmsg);
+                }
+                else
+                {
+
+                    connectSAP.oCompany.GetNewObjectCode(out string docEntry);
+                    Log(logListView, "Successfully added commission. DocEntry: " + docEntry);
+                    Update_Commission_PostFlag(connectSQL, logListView, commission);
+                }
+
+            }
+            finally
+            {
+                //Marshal.ReleaseComObject(connectSAP); //this function exclusive for windows 
+                connectSAP = null; //need to clear the object, or else will cause lag
+            }
+
+        }
+        public static void Insert_RDCommission_To_SAP(Commission commission, ListView logListView, ConnectSAP connectSAP, SqlConnection connectSQL)
+        {
+
+            Log(logListView, "Inserting " + $"CardCode: {commission.CardCode} " + $" Document Number: {commission.NumAtCard}" + " into SAP");
+            Documents oCOM = null;
+
+            try
+            {
+                oCOM = (Documents)connectSAP.oCompany.GetBusinessObject(BoObjectTypes.oCreditNotes);
+
+                oCOM.CardCode = commission.CardCode;
+                oCOM.Comments = commission.Comments;
+                oCOM.DocDate = commission.DocDate;
+                oCOM.DocDueDate = commission.DocDueDate;
+                oCOM.DocType = commission.DocType;
+                oCOM.HandWritten = commission.Handwritten;
+                oCOM.NumAtCard = commission.NumAtCard;
+                oCOM.Project = commission.Project;
+                oCOM.Series = commission.Series;
+                oCOM.TaxDate = commission.TaxDate;
+
+                //add lines
+                //int line = -1;
+                foreach (var lines in commission.Lines)
+                {
+                    //line++;
+                    //if (line > 0) 
+                    //    oCOM.Lines.Add();
+                    //oCOM.Lines.SetCurrentLine(line);
+                    oCOM.Lines.ItemDescription = lines.ItemDescription;
+                    oCOM.Lines.UnitPrice = lines.UnitPrice;
+                    oCOM.Lines.AccountCode = lines.AccountCode;  //SAP requires Account code insert to lines
+                    if (!string.IsNullOrEmpty(lines.ProjectCode))
+                        oCOM.Lines.ProjectCode = lines.ProjectCode;
                     oCOM.Lines.VatGroup = lines.VatGroup;
                     //oCOM.Lines.Quantity = lines.Quantity;  //quantity not require in service document
                     oCOM.Lines.UserFields.Fields.Item("U_FRef").Value = lines.U_FRef; //user defined fields
