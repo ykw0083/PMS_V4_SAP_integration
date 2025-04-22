@@ -350,7 +350,7 @@ namespace PMS_V4_SAP_integration.Helper
                 {
 
                     connectSAP.oCompany.GetNewObjectCode(out string docEntry);
-                    Log(logListView, "Successfully added commission. DocEntry: " + docEntry);
+                    Log(logListView, "Successfully added RD commission. DocEntry: " + docEntry);
                     Update_Commission_PostFlag(connectSQL, logListView, commission);
                 }
 
@@ -413,8 +413,8 @@ namespace PMS_V4_SAP_integration.Helper
                 {
 
                     connectSAP.oCompany.GetNewObjectCode(out string docEntry);
-                    Log(logListView, "Successfully added commission. DocEntry: " + docEntry);
-                    Update_Commission_PostFlag(connectSQL, logListView, commission);
+                    Log(logListView, "Successfully added RD commission. DocEntry: " + docEntry);
+                    Update_RDCommission_PostFlag(connectSQL, logListView, commission);
                 }
 
             }
@@ -513,6 +513,13 @@ namespace PMS_V4_SAP_integration.Helper
             var query = "update comm_iv set postflag = 1 where postflag = 0 and chkflag = 1 and sk_hdr = @SKHDR"; //i exchange SP for testing
             connectSQL.Query(query, new { SKHDR = commission.sk_hdr });
             Log(logListView, "Commission postflag sk_hdr: " + commission.sk_hdr + " updated.");
+        }
+        public static void Update_RDCommission_PostFlag(SqlConnection connectSQL, ListView logListView, Commission commission)
+        {
+
+            var query = "update comm_rd set postflag = 1 where postflag = 0 and chkflag = 1 and sk_hdr = @SKHDR"; //i exchange SP for testing
+            connectSQL.Query(query, new { SKHDR = commission.sk_hdr });
+            Log(logListView, "RD Commission postflag sk_hdr: " + commission.sk_hdr + " updated.");
         }
 
         public static void Update_CreditNote_PostFlag(SqlConnection connectSQL, ListView logListView, CreditNote creditNote)
