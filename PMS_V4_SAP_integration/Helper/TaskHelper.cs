@@ -85,7 +85,7 @@ namespace PMS_V4_SAP_integration.Helper
         //connect SAP
         public static ConnectSAP ConnectSAP(IConfiguration _configuration, ListView logListView)
         {
-            Log(logListView, "Attempting to connect SAP database");
+            Log(logListView, $"Attempting to connect SAP database {_configuration.GetSection("SAPBusinessOneConfig:CompanyDB").Value}");
 
             ConnectSAP connectSQL = new ConnectSAP(_configuration);
 
@@ -94,11 +94,13 @@ namespace PMS_V4_SAP_integration.Helper
             if (connectResult == 0)
             {
                 Log(logListView, "Successfully connected to the SAP database.");
+                Log(logListView, "Please press Post button to continue.");
                 return connectSQL;
             }
             else if (connectResult == 100000085)
             {
                 Log(logListView, "Already log into SAP.");
+                Log(logListView, "Please press Post button to continue.");
                 return connectSQL;
             }
             else

@@ -32,6 +32,7 @@
             listView = new System.Windows.Forms.ListView();
             Time = new System.Windows.Forms.ColumnHeader();
             Message = new System.Windows.Forms.ColumnHeader();
+            btn_post = new System.Windows.Forms.Button();
             SuspendLayout();
             // 
             // textBox1
@@ -47,9 +48,8 @@
             listView.Activation = System.Windows.Forms.ItemActivation.OneClick;
             listView.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             listView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] { Time, Message });
-            listView.HideSelection = false;
             listView.HoverSelection = true;
-            listView.Location = new System.Drawing.Point(12, 62);
+            listView.Location = new System.Drawing.Point(12, 48);
             listView.MinimumSize = new System.Drawing.Size(776, 376);
             listView.Name = "listView";
             listView.Size = new System.Drawing.Size(776, 376);
@@ -66,11 +66,22 @@
             Message.Text = "Message";
             Message.Width = 600;
             // 
+            // btn_post
+            // 
+            btn_post.Location = new System.Drawing.Point(694, 10);
+            btn_post.Name = "btn_post";
+            btn_post.Size = new System.Drawing.Size(94, 29);
+            btn_post.TabIndex = 2;
+            btn_post.Text = "Post";
+            btn_post.UseVisualStyleBackColor = true;
+            btn_post.Click += btn_post_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(800, 450);
+            ClientSize = new System.Drawing.Size(800, 436);
+            Controls.Add(btn_post);
             Controls.Add(listView);
             Controls.Add(textBox1);
             Name = "Form1";
@@ -86,5 +97,6 @@
         private System.Windows.Forms.ListView listView;
         private System.Windows.Forms.ColumnHeader Time;
         private System.Windows.Forms.ColumnHeader Message;
+        private System.Windows.Forms.Button btn_post;
     }
 }

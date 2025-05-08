@@ -22,7 +22,7 @@ namespace PMS_V4_SAP_integration
     {
         private readonly IConfiguration _configuration;
         private System.Windows.Forms.ListView logListView;
-
+        private ConnectSAP sapConnection;
 
         public Form1(string[] args)
         {
@@ -69,15 +69,16 @@ namespace PMS_V4_SAP_integration
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            btn_post.Enabled = false;
             //this logListView references to your logListView define in Form1.cs, not from the task helper.cs
             // Call ConnectSAPAsync to get the SAP connectSQL
-            ConnectSAP sapConnection = TaskHelper.ConnectSAP(_configuration, logListView);
+            sapConnection = TaskHelper.ConnectSAP(_configuration, logListView);
 
             // Check if the SAP connectSQL is successful before proceeding
             if (sapConnection != null)
             {
+                btn_post.Enabled = true;
                 // Pass the SAP connectSQL to ConnectToDatabaseAsync
-                TaskHelper.ConnectToDatabase(_configuration, sapConnection, logListView, textBox1);
             }
             else
             {
@@ -87,6 +88,11 @@ namespace PMS_V4_SAP_integration
 
         }
 
+        private void btn_post_Click(object sender, EventArgs e)
+        {
+            TaskHelper.ConnectToDatabase(_configuration, sapConnection, logListView, textBox1);
+            btn_post.Enabled = false;
 
+        }
     }
 }
