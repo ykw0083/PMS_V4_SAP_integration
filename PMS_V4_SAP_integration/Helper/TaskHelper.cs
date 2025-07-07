@@ -384,7 +384,9 @@ namespace PMS_V4_SAP_integration.Helper
                 oCOM.Project = commission.Project;
                 oCOM.Series = commission.Series;
                 oCOM.TaxDate = commission.TaxDate;
-
+                oCOM.UserFields.Fields.Item("U_EIV_Consolidate").Value = commission.U_EIV_Consolidate;
+                oCOM.UserFields.Fields.Item("U_EIV_InvoiceType").Value = commission.U_EIV_InvoiceType;
+                oCOM.UserFields.Fields.Item("U_EIV_FreqSync").Value = commission.U_EIV_FreqSync;
                 //add lines
                 //int line = -1;
                 foreach (var lines in commission.Lines)
@@ -401,6 +403,7 @@ namespace PMS_V4_SAP_integration.Helper
                     oCOM.Lines.VatGroup = lines.VatGroup;
                     //oCOM.Lines.Quantity = lines.Quantity;  //quantity not require in service document
                     oCOM.Lines.UserFields.Fields.Item("U_FRef").Value = lines.U_FRef; //user defined fields
+                    oCOM.Lines.UserFields.Fields.Item("U_EIV_Classification").Value = lines.U_EIV_Classification;
                     oCOM.Lines.Add();
 
                 }

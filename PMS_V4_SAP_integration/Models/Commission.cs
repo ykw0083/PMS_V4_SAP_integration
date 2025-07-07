@@ -19,6 +19,9 @@ namespace PMS_V4_SAP_integration.Models
         public string Comments { get; set; }
         public int Series { get; set; }
         public BoYesNoEnum Handwritten { get; set; }
+        public string U_EIV_Consolidate { get; set; }
+        public string U_EIV_InvoiceType { get; set; }
+        public string U_EIV_FreqSync { get; set; }
 
         public List<CommissionList> Lines { get; set; } = new List<CommissionList>();
 
