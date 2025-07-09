@@ -22,6 +22,10 @@ namespace PMS_V4_SAP_integration.Models
         public string U_EIV_Consolidate { get; set; }
         public string U_EIV_InvoiceType { get; set; }
         public string U_EIV_FreqSync { get; set; }
+        public string U_EIV_OriRefNum { get; set; }
+        public string U_EIV_OriCode { get; set; }
+        public string U_EIV_SupplierMSIC { get; set; }
+        public string U_EIV_SupplierBActivity { get; set; }
 
         public List<CommissionList> Lines { get; set; } = new List<CommissionList>();
 

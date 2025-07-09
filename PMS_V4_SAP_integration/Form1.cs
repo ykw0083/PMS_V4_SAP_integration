@@ -94,5 +94,11 @@ namespace PMS_V4_SAP_integration
             btn_post.Enabled = false;
 
         }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (sapConnection != null)
+                sapConnection.DisConnect();
+        }
     }
 }

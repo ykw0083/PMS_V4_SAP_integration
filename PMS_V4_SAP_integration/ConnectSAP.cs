@@ -30,6 +30,13 @@ namespace PMS_V4_SAP_integration
             _configuration = configuration;
 
         }
+        public void DisConnect()
+        {
+            if (oCompany != null) {
+                if (oCompany.Connected) { oCompany.Disconnect(); }
+            }
+
+        }
         public int SAPConnect()
         {
             string connectionString = _configuration.GetConnectionString("Default");

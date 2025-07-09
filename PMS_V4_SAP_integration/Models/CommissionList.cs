@@ -14,6 +14,7 @@ namespace PMS_V4_SAP_integration.Models
         public double UnitPrice { get; set; }
         public string VatGroup { get; set; }
         public string U_EIV_Classification { get; set; }
+        public string U_EIV_Measure { get; set; }
 
     }
 }

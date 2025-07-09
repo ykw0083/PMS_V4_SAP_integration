@@ -14,6 +14,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.LinkLabel;
 
 namespace PMS_V4_SAP_integration.Helper
 {
@@ -378,15 +379,27 @@ namespace PMS_V4_SAP_integration.Helper
                 oCOM.Comments = commission.Comments;
                 oCOM.DocDate = commission.DocDate;
                 oCOM.DocDueDate = commission.DocDueDate;
+                oCOM.TaxDate = commission.TaxDate;
                 oCOM.DocType = commission.DocType;
                 oCOM.HandWritten = commission.Handwritten;
                 oCOM.NumAtCard = commission.NumAtCard;
-                oCOM.Project = commission.Project;
                 oCOM.Series = commission.Series;
-                oCOM.TaxDate = commission.TaxDate;
-                oCOM.UserFields.Fields.Item("U_EIV_Consolidate").Value = commission.U_EIV_Consolidate;
-                oCOM.UserFields.Fields.Item("U_EIV_InvoiceType").Value = commission.U_EIV_InvoiceType;
-                oCOM.UserFields.Fields.Item("U_EIV_FreqSync").Value = commission.U_EIV_FreqSync;
+                if (!string.IsNullOrEmpty(commission.Project))
+                    oCOM.Project = commission.Project;
+                if (!string.IsNullOrEmpty(commission.U_EIV_Consolidate))
+                    oCOM.UserFields.Fields.Item("U_EIV_Consolidate").Value = commission.U_EIV_Consolidate;
+                if (!string.IsNullOrEmpty(commission.U_EIV_InvoiceType))
+                    oCOM.UserFields.Fields.Item("U_EIV_InvoiceType").Value = commission.U_EIV_InvoiceType;
+                if (!string.IsNullOrEmpty(commission.U_EIV_FreqSync))
+                    oCOM.UserFields.Fields.Item("U_EIV_FreqSync").Value = commission.U_EIV_FreqSync;
+                if (!string.IsNullOrEmpty(commission.U_EIV_OriRefNum))
+                    oCOM.UserFields.Fields.Item("U_EIV_OriRefNum").Value = commission.U_EIV_OriRefNum;
+                if (!string.IsNullOrEmpty(commission.U_EIV_OriCode))
+                    oCOM.UserFields.Fields.Item("U_EIV_OriCode").Value = commission.U_EIV_OriCode;
+                if (!string.IsNullOrEmpty(commission.U_EIV_SupplierMSIC))
+                    oCOM.UserFields.Fields.Item("U_EIV_SupplierMSIC").Value = commission.U_EIV_SupplierMSIC;
+                if (!string.IsNullOrEmpty(commission.U_EIV_SupplierBActivity))
+                    oCOM.UserFields.Fields.Item("U_EIV_SupplierBActivity").Value = commission.U_EIV_SupplierBActivity;
                 //add lines
                 //int line = -1;
                 foreach (var lines in commission.Lines)
@@ -400,10 +413,15 @@ namespace PMS_V4_SAP_integration.Helper
                     oCOM.Lines.AccountCode = lines.AccountCode;  //SAP requires Account code insert to lines
                     if (!string.IsNullOrEmpty(lines.ProjectCode))
                         oCOM.Lines.ProjectCode = lines.ProjectCode;
-                    oCOM.Lines.VatGroup = lines.VatGroup;
+                    if (!string.IsNullOrEmpty(lines.VatGroup))
+                        oCOM.Lines.VatGroup = lines.VatGroup;
                     //oCOM.Lines.Quantity = lines.Quantity;  //quantity not require in service document
-                    oCOM.Lines.UserFields.Fields.Item("U_FRef").Value = lines.U_FRef; //user defined fields
-                    oCOM.Lines.UserFields.Fields.Item("U_EIV_Classification").Value = lines.U_EIV_Classification;
+                    if (!string.IsNullOrEmpty(lines.U_FRef))
+                        oCOM.Lines.UserFields.Fields.Item("U_FRef").Value = lines.U_FRef; //user defined fields
+                    if (!string.IsNullOrEmpty(lines.U_EIV_Classification))
+                        oCOM.Lines.UserFields.Fields.Item("U_EIV_Classification").Value = lines.U_EIV_Classification;
+                    if (!string.IsNullOrEmpty(lines.U_EIV_Measure))
+                        oCOM.Lines.UserFields.Fields.Item("U_EIV_Measure").Value = lines.U_EIV_Measure;
                     oCOM.Lines.Add();
 
                 }
